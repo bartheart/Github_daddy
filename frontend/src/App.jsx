@@ -1,8 +1,9 @@
 // src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import GitHubLogin from './components/GitHubLogin';
-import GitHubCallback from './components/GitHubCallback';
+import GitHubLogin from './views/GitHubLogin';
+import GitHubCallback from './views/GitHubCallback';
+import Match from './views/Match'; // Import the RepoInput component
 
 const App = () => {
   return (
@@ -13,6 +14,9 @@ const App = () => {
         
         {/* Route for handling the GitHub callback */}
         <Route path="/callback" element={<GitHubCallback />} />
+        
+        {/* Route for the repository input form page */}
+        <Route path="/match" element={<Match onSubmitRepo={(repoUrl) => console.log(repoUrl)} />} />
       </Routes>
     </Router>
   );

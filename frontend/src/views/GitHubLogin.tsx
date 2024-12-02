@@ -1,3 +1,4 @@
+// src/views/GitHubLogin.tsx
 import React from 'react';
 
 
@@ -6,9 +7,6 @@ const GitHubLogin: React.FC = () => {
         
         // redirect to FastAPI login route/endpoint to start Github OAuth
         window.location.href = 'http://localhost:8001/login'
-
-
-        
     };
 
     return (
