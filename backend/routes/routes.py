@@ -1,6 +1,6 @@
 # backend/routes.py
-from fastapi import APIRouter, HTTPException
-from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import RedirectResponse
 import os
 from dotenv import load_dotenv
 
@@ -27,11 +27,6 @@ if not CLIENT_ID:
 GITHUB_AUTHORIZE_URL = "https://github.com/login/oauth/authorize"
 
 
-@router.get("/")
-async def test():
-    return ("shush")
-
-
 @router.get("/login")
 async def login():
     """
@@ -43,7 +38,7 @@ async def login():
 
 
 @router.get("/callback")
-async def callback(code: str):
+async def callback(code: str, request: Request):
     """
     Handle GitHub OAuth callback, exchange code for access token,
     and fetch user information.
@@ -62,11 +57,27 @@ async def callback(code: str):
     # Fetch user's email (optional)
     user_email = fetch_github_email(access_token)
 
-    return RedirectResponse(f"http://localhost:3000/home?username={user_data['login']}&avatar={user_data['avatar_url']}&email={user_email}")
 
-    # # Return essential user info
-    # return JSONResponse({
-    #     "username": user_data["login"],
-    #     "avatar": user_data["avatar_url"],
-    #     "email": user_email,
-    # })
+    # store the user data in the server side session
+    request.session["user"] = {
+        "username": user_data["login"],
+        "avatar": user_data['avatar_url'],
+        "email": user_email
+    }
+
+    return RedirectResponse(f"http://localhost:3000/home")
+
+
+@router.get("/user")
+async def get_user(request: Request):
+    # get the user data from the session 
+    user = request.session.get("user")
+    # check if not user 
+    if not user:
+        raise HTTPException(status_code=401, detail="User not authenticated.")
+    return user
+
+
+
+# define a route to handle the the processing the repo link 
+    
