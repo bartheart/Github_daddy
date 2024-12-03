@@ -62,9 +62,11 @@ async def callback(code: str):
     # Fetch user's email (optional)
     user_email = fetch_github_email(access_token)
 
-    # Return essential user info
-    return JSONResponse({
-        "username": user_data["login"],
-        "avatar": user_data["avatar_url"],
-        "email": user_email,
-    })
+    return RedirectResponse(f"http://localhost:3000/home?username={user_data['login']}&avatar={user_data['avatar_url']}&email={user_email}")
+
+    # # Return essential user info
+    # return JSONResponse({
+    #     "username": user_data["login"],
+    #     "avatar": user_data["avatar_url"],
+    #     "email": user_email,
+    # })

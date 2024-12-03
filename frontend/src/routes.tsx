@@ -9,7 +9,7 @@ import GithubLogin from "./Auth/GithubLogin";
 // define the route object
 const routes: RouteObject[] = [
     {
-        // home page route
+        // auth route
         path: '/',
         element: <GithubLogin />,
     },
@@ -17,6 +17,12 @@ const routes: RouteObject[] = [
         // match route 
         path: '/match',
         element: <Match />
+    }, 
+    {
+        // home route 
+        path: '/home',
+        element: <Home />
+
     }
 ];
 

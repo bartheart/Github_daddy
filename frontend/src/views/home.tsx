@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import routes from '../routes';
-import { data, useNavigate } from 'react-router-dom';
-import { URLSearchParams } from 'url';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 // define the data types expecting from the server 
 interface UserData {
@@ -15,6 +14,8 @@ interface UserData {
 
 // define home componenet 
 const Home: React.FC =() => {
+    console.log('Home component rendering...');
+
     // initialize a state for the capturing the user data 
     const [userData, setUserData] = useState<UserData | null>(null);
     // initialize a state for error handling 
@@ -22,54 +23,29 @@ const Home: React.FC =() => {
     // initialize the navigate componenet
     const navigate = useNavigate();
 
+    const [searchParams] = useSearchParams();
 
     useEffect(() => {
-        // capture the secret code back from github auth 
-        const urlParams = new URLSearchParams(window.location.search)
+        // capture the url parameters back from the server
+        //const urlParams = new URLSearchParams(window.location.search)
 
-        // get the code 
-        const code = urlParams.get('code')
+        // get the username, email and avatar for the user 
+        const username = searchParams.get('username');
+        const email = searchParams.get('email');
+        const avatar = searchParams.get('avatar');
 
-        // check if we got code back 
-        if (code) {
-            // fetch the userdata from the server
-            fetch(`http://localhost:8001/callback?code=${code}`, {
-                method: 'GET', // explicitly set method
-                credentials: 'include', // if you need to send cookies
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then((response) => {
-                    // if we got no response 
-                    if (!response.ok) {
-                        throw new Error("Failed to fetch user data");
-                    }
-                    return response.json();
-                })
-                .then((data) => {
-                    console.log("about to set the data");
-                    // set the user data 
-                    setUserData(data);
-                    // output a message with the data fetched 
-                    console.log("User data fetched: " , {data});
-                })
-                .then(() => {
-                    // navigate or redirect to the the match page
-                    navigate('/match')
-                })
-                .catch((err) => {
-                    setError('Failed to fetch user data');
-                    console.error(err);
-                });
+        // check if the username and avatar is returned
+        if (username && avatar) {
+            // set userdata state 
+            setUserData({
+                username,
+                avatar,
+                email: email || null
+            });
         } else {
-            setError('Authorization code missing!');
+            navigate('/');
         }
-    }, [navigate]);
-
-    if (error) {
-        return <div>{error}</div>;
-    }
+    }, [searchParams, navigate]);
 
     return (
         <div>
@@ -79,7 +55,7 @@ const Home: React.FC =() => {
 
                     <img src={userData.avatar} alt='Avatar'/>
                     
-                    <p>Email: {userData.email}</p>
+                    <p>Email: {userData.email || 'Not provided'}</p>
 
                 </div>
             ): (
