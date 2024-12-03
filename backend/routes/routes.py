@@ -38,10 +38,7 @@ async def login():
     Redirect user to GitHub's OAuth login page.
     """
     # Build the redirect URL
-    redirect_url = (
-        f"{GITHUB_AUTHORIZE_URL}?client_id={CLIENT_ID}&scope=read:user,user:email"
-        f"&redirect_uri={REDIRECT_URI}"
-    )
+    redirect_url = f"{GITHUB_AUTHORIZE_URL}?client_id={CLIENT_ID}&scope=read:user,user:email&redirect_uri={REDIRECT_URI}"
     return RedirectResponse(redirect_url)
 
 
