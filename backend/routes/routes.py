@@ -80,4 +80,9 @@ async def get_user(request: Request):
 
 
 # define a route to handle the the processing the repo link 
-    
+@router.get('process_repo')
+async def process_repo(request: dict):
+    # call function to save the repos data to the sesssion 
+
+    # call functino to evaluate the with the llm 
+    pass
