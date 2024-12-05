@@ -1,7 +1,6 @@
 // frontend/src/views/home.tsx
 
 import React, { useEffect, useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
 import RepoSubmit from '../Components/repoSubmit';
 
 // define the data types expecting from the server 
@@ -14,7 +13,7 @@ interface UserData {
 
 // define home componenet 
 const Home: React.FC =() => {
-    console.log('Home component rendering...');
+    //console.log('Home component rendering...');
 
     // initialize a state for the capturing the user data 
     const [userData, setUserData] = useState<UserData | null>(null);
@@ -37,7 +36,7 @@ const Home: React.FC =() => {
             setError("Failed to fetch the user data");
             console.error(error);
         });
-    });
+    }, []);
 
     return (
         <div>

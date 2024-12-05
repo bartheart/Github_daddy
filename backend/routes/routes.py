@@ -7,7 +7,8 @@ from dotenv import load_dotenv
 # import the github OAuth fucntons 
 from services import get_github_access_token, fetch_github_email, fetch_github_user
 
-
+# import functions to process repo data 
+from services import get_user_info_link, get_repo_data, get_issues, get_contributors, get_commit_history
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -80,9 +81,39 @@ async def get_user(request: Request):
 
 
 # define a route to handle the the processing the repo link 
-@router.get('process_repo')
-async def process_repo(request: dict):
+@router.post('/process_repo')
+async def process_repo(request: Request):
+    body = await request.json()
+    repo_url = body.get("repo_url")
+    if not repo_url:
+        raise HTTPException(status_code=400, detail="Missing 'repo_url' in request body.")
     # call function to save the repos data to the sesssion 
+    
+    owner, repo_name = get_user_info_link(repo_url)
+    
 
-    # call functino to evaluate the with the llm 
-    pass
+    # Fetch data
+    repo_data = get_repo_data(owner, repo_name)
+    print(repo_data)
+    commit_history = get_commit_history(owner, repo_name)
+    contributors = get_contributors(owner, repo_name)
+    issues = get_issues(owner, repo_name)
+
+    request.session["all_repo_data"] = {
+        "repo_data": repo_data,
+        "commit_history": commit_history,
+        "contributors": contributors,
+        "issues": issues
+    }
+
+    return RedirectResponse(f"http://localhost/3000/match")
+
+
+@router.get('/repo_data')
+async def get_all_repo_data(request: Request):
+    all_repo_data = request.session['all_repo_data']
+
+    # check if not user 
+    if not all_repo_data:
+        raise HTTPException(status_code=401, detail="No repo data returned.")
+    return all_repo_data
