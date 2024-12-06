@@ -1,6 +1,7 @@
 #  backend/services/repo_process.py
 from fastapi import HTTPException
 import requests
+import os
 
 
 # Github API url for fetching repository data
@@ -11,6 +12,8 @@ def get_user_info_link (repo_url: str):
     # check if there is no url 
     if not repo_url:
         raise HTTPException(status_code=400, detail="Repo link/url is required")
+    
+    repo_url = repo_url.rstrip('.git')
     
     # exteact the owner and repo name from the URL
     parts = repo_url.rstrip("/").split("/")
@@ -23,11 +26,11 @@ def get_user_info_link (repo_url: str):
     return owner, repo_name
 
 
-# define the funtion to get the github data
+#define the funtion to get the github data
 def get_repo_data( owner:str, repo_name:str ) -> dict:
     # create the github api url 
     url = GITHUB_API_URL.format(owner=owner, repo_name=repo_name)
-
+    
     # get the respinse from the api endpoint 
     response = requests.get(url)
 
@@ -41,18 +44,42 @@ def get_repo_data( owner:str, repo_name:str ) -> dict:
     # repository data response 
     # Repository data response
     repo_data = response.json()
-    return repo_data
-    # {
-    #     "name": repo_data.get("name"),
-    #     "description": repo_data.get("description"),
-    #     "owner": repo_data.get("owner", {}).get("login"),
-    #     "stars": repo_data.get("stargazers_count"),
-    #     "forks": repo_data.get("forks_count"),
-    #     "open_issues": repo_data.get("open_issues_count"),
-    #     "url": repo_data.get("html_url"),
-    #     "created_at": repo_data.get("created_at"),
-    # }
+    return {
+        "name": repo_data.get("name"),
+        "description": repo_data.get("description"),
+        "owner": repo_data.get("owner", {}).get("login"),
+        "stars": repo_data.get("stargazers_count"),
+        "forks": repo_data.get("forks_count"),
+        "open_issues": repo_data.get("open_issues_count"),
+        "url": repo_data.get("html_url"),
+        "created_at": repo_data.get("created_at"),
+    }
 
+# def get_repo_data(owner: str, repo_name: str) -> dict:
+#     # Create the GitHub API URL
+#     url = url = GITHUB_API_URL.format(owner=owner, repo_name=repo_name.replace('.git', ''))
+# # Which will be: https://api.github.com/repos/bradleyombachi/capstone
+#     print(f"DEBUG: Constructed URL: {url}")
+
+#     try:
+#         response = requests.get(url)
+        
+#         # Print full response details for debugging
+#         print(f"DEBUG: Response Status Code: {response.status_code}")
+#         print(f"DEBUG: Response Headers: {response.headers}")
+#         print(f"DEBUG: Response Content: {response.text}")
+
+#         # Raise an exception for unsuccessful responses
+#         response.raise_for_status()
+        
+#         return response.json()
+    
+#     except requests.exceptions.RequestException as err:
+#         print(f"DEBUG: Full error details: {err}")
+#         raise HTTPException(
+#             status_code=response.status_code if 'response' in locals() else 500, 
+#             detail=f"Failed to fetch data for {repo_name} repository. Error: {err}"
+#         )
 
 # define a function to fecth commit history  
 def get_commit_history( owner: str, repo_name: str) -> list:

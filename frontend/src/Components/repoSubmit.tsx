@@ -6,7 +6,6 @@ const RepoSubmit: React.FC =  () => {
     //initalize a state to capture the repo link
     const [repoUrl, setRepoUrl] = useState("");
     const [error, setError] = useState<string | null>(null);
-    const [data, setData] = useState(null);
 
     const handleSubmit = async ( e: React.FormEvent ) => {
         e.preventDefault()
@@ -16,14 +15,14 @@ const RepoSubmit: React.FC =  () => {
             const response = await fetch("http://localhost:8001/process_repo", {
                 method : "POST",
                 headers : {
-                    "Content-Type": "application/json",
+                    //"Content-Type": "application/json",
                 },
                 body: JSON.stringify({ repo_url: repoUrl }),
 
                 credentials: 'include'
             });
 
-                    // Check if the response is ok
+            // Check if the response is ok
             if (response.ok) {
                 // If successful, redirect to match page
                 window.location.href = "http://localhost:3000/match";

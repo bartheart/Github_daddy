@@ -90,11 +90,9 @@ async def process_repo(request: Request):
     # call function to save the repos data to the sesssion 
     
     owner, repo_name = get_user_info_link(repo_url)
-    
 
     # Fetch data
     repo_data = get_repo_data(owner, repo_name)
-    print(repo_data)
     commit_history = get_commit_history(owner, repo_name)
     contributors = get_contributors(owner, repo_name)
     issues = get_issues(owner, repo_name)
@@ -106,7 +104,9 @@ async def process_repo(request: Request):
         "issues": issues
     }
 
-    return RedirectResponse(f"http://localhost/3000/match")
+    #print(f"Session data after setting: {request.session}")
+
+    return None
 
 
 @router.get('/repo_data')

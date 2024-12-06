@@ -26,7 +26,11 @@ app.add_middleware(
 
 # add a session middleware for server side session mangement 
 app.add_middleware(
-    SessionMiddleware, SECRET_KEY
+    SessionMiddleware, 
+    secret_key=SECRET_KEY,
+    session_cookie="session_id",  # Explicit session cookie name
+    same_site="lax",  # Or "none" if using cross-origin
+    https_only=False  # Set to True in production
 )
 
 # Include the router that holds all the routes
